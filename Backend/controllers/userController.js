@@ -69,7 +69,7 @@ exports.getUserDetails = catchAsyncErrors(async (req, res, next) => {
 
 // Get User Details
 exports.getMyDetails = catchAsyncErrors(async (req, res, next) => {
-  const user = await User.findById(req.user._id);
+  const user = await User.findById(req.user.id);
 
   console.log(req.user);
 
@@ -112,21 +112,21 @@ exports.updateProfile = catchAsyncErrors(async (req, res, next) => {
 exports.updatePassword = catchAsyncErrors(async (req, res, next) => {
   const user = await User.findById(req.user.id).select("+Password");
 
-  const isPasswordMatched = await user.comparePassword(req.body.oldPassword);
+  const isPasswordMatched = await user.comparePassword(req.body.OldPassword);
 
   if (!isPasswordMatched) {
     return next(new ErrorHandler("Old password is incorrect", 400));
   }
 
-  if (req.body.newPassword !== req.body.confirmPassword) {
+  if (req.body.NewPassword !== req.body.ConfirmPassword) {
     return next(new ErrorHandler("Password does not match", 400));
   }
 
-  user.Password = req.body.newPassword;
+  user.Password = req.body.NewPassword;
 
   await user.save();
 
-  sendToken(user, 200, res);
+  signInToken(user, 200, res);
 });
 
 // Delete User
@@ -199,7 +199,7 @@ exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
 
   const resetPasswordUrl = `${req.protocol}://${req.get(
     "host"
-  )}/api/password/reset/${resetToken}`;
+  )}/api/user/password/reset/${resetToken}`;
 
   const message = `Your password reset token is :- \n\n ${resetPasswordUrl} \n\nIf you have not requested this email then, please ignore it.`;
 

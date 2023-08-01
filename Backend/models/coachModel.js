@@ -14,7 +14,7 @@ const coachSchema = new mongoose.Schema({
   Name: {
     type: String,
     required: [true, "Please Enter Your Name"],
-    unique: [true, "Coach with this already exists"],
+    unique: [true, "Coach with this name already exists"],
     maxLength: [30, "Name cannot exceed 30 characters"],
     minLength: [4, "Name should have more than 4 characters"],
   },
@@ -117,7 +117,10 @@ coachSchema.methods.getJWT = function () {
   });
 };
 
-caochSchema.methods.comparePassword = async function (Password) {
+coachSchema.methods.comparePassword = async function (Password) {
+  if(!Password) {
+    return false
+  }
   return await bcrypt.compare(Password, this.Password);
 };
 

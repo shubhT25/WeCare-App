@@ -61,15 +61,15 @@ exports.getCoachDetails = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-// Get Coach Details
+// Get login Coach Details
 exports.getMyDetails = catchAsyncErrors(async (req, res, next) => {
-  const coach = await Coach.findById(req.Coach._id);
+  const coach = await Coach.findById(req.coach.id);
 
-  console.log(req.Coach);
+  console.log(req.coach);
 
   if (!coach) {
     return next(
-      new ErrorHandler(`Coach does not exist with Id: ${req.Coach.id}`, 400)
+      new ErrorHandler(`Coach does not exist with Id: ${req.coach.id}`, 400)
     );
   }
 
@@ -106,21 +106,23 @@ exports.updateProfile = catchAsyncErrors(async (req, res, next) => {
 exports.updatePassword = catchAsyncErrors(async (req, res, next) => {
   const coach = await Coach.findById(req.coach.id).select("+Password");
 
-  const isPasswordMatched = await Coach.comparePassword(req.body.oldPassword);
+  console.log(coach)
+
+  const isPasswordMatched = await coach.comparePassword(req.body.OldPassword);
 
   if (!isPasswordMatched) {
     return next(new ErrorHandler("Old password is incorrect", 400));
   }
 
-  if (req.body.newPassword !== req.body.confirmPassword) {
+  if (req.body.NewPassword !== req.body.ConfirmPassword) {
     return next(new ErrorHandler("Password does not match", 400));
   }
 
-  coach.Password = req.body.newPassword;
+  coach.Password = req.body.NewPassword;
 
   await coach.save();
 
-  sendToken(coach, 200, res);
+  signInToken(coach, 200, res);
 });
 
 // Delete Coach
@@ -162,7 +164,7 @@ exports.loginCoach = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Invalid CoachId or Password", 401));
   }
 
-  signInToken(Coach, 200, res);
+  signInToken(coach, 200, res);
 });
 
 //logout Coach
@@ -189,11 +191,11 @@ exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
   // Get ResetPassword Token
   const resetToken = coach.getResetPasswordToken();
 
-  await Coach.save({ validateBeforeSave: false });
+  await coach.save({ validateBeforeSave: false });
 
   const resetPasswordUrl = `${req.protocol}://${req.get(
     "host"
-  )}/api/password/reset/${resetToken}`;
+  )}/api/coach/password/reset/${resetToken}`;
 
   const message = `Your password reset token is :- \n\n ${resetPasswordUrl} \n\nIf you have not requested this email then, please ignore it.`;
 
@@ -206,7 +208,7 @@ exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: `Email sent to ${Coach.Email} successfully`,
+      message: `Email sent to ${coach.Email} successfully`,
     });
   } catch (error) {
     coach.resetPasswordToken = undefined;

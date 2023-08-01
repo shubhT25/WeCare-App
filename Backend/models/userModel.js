@@ -150,6 +150,9 @@ userSchema.methods.getJWT = function () {
 };
 
 userSchema.methods.comparePassword = async function (Password) {
+  if(!Password) {
+    return false
+  }
   return await bcrypt.compare(Password, this.Password);
 };
 

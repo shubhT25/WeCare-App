@@ -8,10 +8,11 @@ app.use(cookieParser());
 
 const errorMiddleware = require('./middleware/error.js')
 const user = require('./routes/userRoutes.js')
+const coach = require('./routes/coachRoutes.js')
 
 
 app.use("/api", user)
+app.use("/api", coach)
 
-console.log("api")
 app.use(errorMiddleware)
 module.exports = app
