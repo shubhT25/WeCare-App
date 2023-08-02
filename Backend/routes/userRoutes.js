@@ -1,4 +1,5 @@
 const express = require('express');
+const { getUserBookings } = require('../controllers/bookingController');
 const { getAllUsers, registerUser, getUserDetails, updateProfile, deleteUser, loginUser, logoutUser, getMyDetails, forgotPassword, resetPassword, updatePassword } = require('../controllers/userController');
 const { isAuthenticatedUser } = require('../middleware/auth');
 

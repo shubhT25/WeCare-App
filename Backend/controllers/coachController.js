@@ -1,19 +1,19 @@
-const catchAsyncErrors = require("../middleware/catchAsyncErrors.js");
-const Coach = require("../models/coachModel.js");
-const ErrorHandler = require("../utils/errorHandler.js");
-const sendEmail = require("../utils/sendEmail.js");
-const signInToken = require("../utils/signInToken.js");
+const catchAsyncErrors = require("../middleware/catchAsyncErrors");
+const Coach = require("../models/coachModel");
+const ErrorHandler = require("../utils/errorHandler");
+const sendEmail = require("../utils/sendEmail");
+const signInToken = require("../utils/signInToken");
 const crypto = require("crypto");
 
 //getAllCoachs --admin
-exports.getAllCoachs = async (req, res, next) => {
+exports.getAllCoachs = catchAsyncErrors(async (req, res, next) => {
   const coaches = await Coach.find();
 
   res.status(200).json({
     success: true,
     coaches,
   });
-};
+});
 
 //registerCoach
 exports.registerCoach = catchAsyncErrors(async (req, res, next) => {
@@ -65,8 +65,6 @@ exports.getCoachDetails = catchAsyncErrors(async (req, res, next) => {
 exports.getMyDetails = catchAsyncErrors(async (req, res, next) => {
   const coach = await Coach.findById(req.coach.id);
 
-  console.log(req.coach);
-
   if (!coach) {
     return next(
       new ErrorHandler(`Coach does not exist with Id: ${req.coach.id}`, 400)
@@ -105,8 +103,6 @@ exports.updateProfile = catchAsyncErrors(async (req, res, next) => {
 // update Coach password
 exports.updatePassword = catchAsyncErrors(async (req, res, next) => {
   const coach = await Coach.findById(req.coach.id).select("+Password");
-
-  console.log(coach)
 
   const isPasswordMatched = await coach.comparePassword(req.body.OldPassword);
 
@@ -227,14 +223,10 @@ exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
     .update(req.params.token)
     .digest("hex");
 
-  console.log(resetPasswordToken);
-
   const coach = await Coach.findOne({
     resetPasswordToken,
     resetPasswordExpire: { $gt: Date.now() },
   });
-
-  console.log(coach);
 
   if (!coach) {
     return next(

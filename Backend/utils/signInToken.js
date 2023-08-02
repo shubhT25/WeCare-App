@@ -2,8 +2,6 @@
 
 const signInToken = (user, statusCode, res) => {
 
-  console.log(user)
-
   const token = user.getJWT();
   // options for cookie
   const options = {

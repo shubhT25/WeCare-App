@@ -94,18 +94,18 @@ const userSchema = new mongoose.Schema({
   resetPasswordExpire: Date,
 });
 
-function pwdValidate() {
+function pwdValidate(value) {
   const pwdRegex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
-  const pwdValidationResult = pwdRegex.test(this.Password);
+  const pwdValidationResult = pwdRegex.test(value);
   if (!pwdValidationResult) {
     return false;
   }
   return true;
 }
 
-function ageValidate() {
+function ageValidate(value) {
   const today = new Date();
-  const DateOfBirth = new Date(this.DateOfBirth);
+  const DateOfBirth = new Date(value);
   var age = today.getYear() - DateOfBirth.getYear();
   const m = today.getMonth() - DateOfBirth.getMonth();
   if (m < 0 || (m === 0 && today.getDate() < DateOfBirth.getDate())) {
@@ -117,18 +117,18 @@ function ageValidate() {
   return true
 }
 
-function MNValidate() {
+function MNValidate(value) {
   const MNRegex = /^[1-9][0-9]{9}$/;
-    const MNValidationResult = MNRegex.test(this.MobileNumber.toString());
+    const MNValidationResult = MNRegex.test(value.toString());
     if (!MNValidationResult) {
       return false
   }
   return true
 }
 
-function pinValidate() {
+function pinValidate(value) {
   const pinRegex = /^[1-9][0-9]{5}$/;
-    const pinValidationResult = pinRegex.test(this.PinCode.toString());
+    const pinValidationResult = pinRegex.test(value.toString());
     if (!pinValidationResult) {
       return false
   }

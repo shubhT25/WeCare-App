@@ -1,19 +1,19 @@
-const catchAsyncErrors = require("../middleware/catchAsyncErrors.js");
-const User = require("../models/userModel.js");
-const ErrorHandler = require("../utils/errorHandler.js");
-const sendEmail = require("../utils/sendEmail.js");
-const signInToken = require("../utils/signInToken.js");
+const catchAsyncErrors = require("../middleware/catchAsyncErrors");
+const User = require("../models/userModel");
+const ErrorHandler = require("../utils/errorHandler");
+const sendEmail = require("../utils/sendEmail");
+const signInToken = require("../utils/signInToken");
 const crypto = require("crypto");
 
 //getAllUsers --admin
-exports.getAllUsers = async (req, res, next) => {
+exports.getAllUsers = catchAsyncErrors (async (req, res, next) => {
   const users = await User.find();
 
   res.status(200).json({
     success: true,
     users,
   });
-};
+});
 
 //registerUser
 exports.registerUser = catchAsyncErrors(async (req, res, next) => {
@@ -70,8 +70,6 @@ exports.getUserDetails = catchAsyncErrors(async (req, res, next) => {
 // Get User Details
 exports.getMyDetails = catchAsyncErrors(async (req, res, next) => {
   const user = await User.findById(req.user.id);
-
-  console.log(req.user);
 
   if (!user) {
     return next(
@@ -231,14 +229,11 @@ exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
     .update(req.params.token)
     .digest("hex");
 
-  console.log(resetPasswordToken);
-
   const user = await User.findOne({
     resetPasswordToken,
     resetPasswordExpire: { $gt: Date.now() },
   });
 
-  console.log(user);
 
   if (!user) {
     return next(

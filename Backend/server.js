@@ -1,6 +1,6 @@
 const app = require('./app')
 const dotenv = require("dotenv")
-const connectDB = require("./utils/connectDB.js");
+const connectDB = require("./utils/connectDB");
 const ErrorHandler = require('./utils/errorHandler');
 
 dotenv.config({path:"Backend/config/config.env"})
